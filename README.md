@@ -61,7 +61,8 @@ To ensure the app is accessible to a diverse population, we added a robust real-
 * **Instant Switching:** Users can select their preferred language from a dropdown in the header, and the entire interface translates instantly without reloading the page.
 * **Persistent Preferences:** The user's language choice is saved in their browser, so it automatically loads their preferred language the next time they visit.
 
-### 5. 🏢 Enhanced Authority Dashboard
+### 5. 🏢 Enhanced Authority Dashboard there
+
 We completely upgraded the backend data processing and the Authority view (`authority.html`).
 * **Rich Data Display:** The dashboard cards now display the AI-generated data, including Issue Type, Severity, Accident Risk Level, Cleanliness Rating, and the Reporter's Nickname.
 * **Status Management:** Authorities can view the hazard on the map, mark issues as "Resolved", or "Reopen" them directly from the dashboard.
