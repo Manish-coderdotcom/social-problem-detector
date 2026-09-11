@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Pothole Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex: 1; min-width: 300px; }
+        h1, h2 { color: #333; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        .item { padding: 10px; border-bottom: 1px solid #eee; }
+        .item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">🚦 Smart Pothole Alert System</h1>
+
+    <div class="container">
+        <!-- Report Form -->
+        <div class="card">
+            <h2>🚨 Report a Pothole</h2>
+            <input type="text" id="username" placeholder="Your Username (e.g., Rahul)">
+            <input type="number" id="lat" placeholder="Latitude (e.g., 28.7041)">
+            <input type="number" id="lng" placeholder="Longitude (e.g., 77.1025)">
+            <button onclick="submitReport()">Submit Report</button>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="card">
+            <h2>🏆 Leaderboard</h2>
+            <div id="leaderboard">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Potholes List -->
+    <div class="container" style="margin-top: 20px;">
+        <div class="card" style="flex: 100%;">
+            <h2>🗺️ Live Reported Potholes</h2>
+            <div id="potholes">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and display Potholes
+        async function loadPotholes() {
+            const res = await fetch('/api/potholes');
+            const data = await res.json();
+            const container = document.getElementById('potholes');
+            if(data.length === 0) return container.innerHTML = "No potholes reported yet.";
+            
+            container.innerHTML = data.map(p => 
+                `<div class="item">
+                    <strong>📍 Location:</strong> [${p.lat}, ${p.lng}] <br>
+                    <strong>👤 Reported By:</strong> ${p.reportedBy} | <strong>Status:</strong> ⏳ ${p.status}
+                </div>`
+            ).join('');
+        }
+
+        // Fetch and display Leaderboard
+        async function loadLeaderboard() {
+            const res = await fetch('/api/leaderboard');
+            const data = await res.json();
+            const container = document.getElementById('leaderboard');
+            if(data.length === 0) return container.innerHTML = "No users yet.";
+
+            container.innerHTML = data.map(u => 
+                `<div class="item">
+                    <strong>${u.username}</strong> - ${u.points} pts <br>
+                    <em>Badge: ${u.badge}</em>
+                </div>`
+            ).join('');
+        }
+
+        // Submit new Pothole
+        async function submitReport() {
+            const username = document.getElementById('username').value;
+            const lat = document.getElementById('lat').value;
+            const lng = document.getElementById('lng').value;
+
+            if(!lat || !lng) return alert("Please enter Latitude and Longitude!");
+
+            await fetch('/api/potholes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, lat, lng, severity: 'High' })
+            });
+
+            alert("Pothole Reported Successfully! 10 Points added.");
+            loadPotholes();
+            loadLeaderboard();
+        }
+
+        // Load data when page starts
+        loadPotholes();
+        loadLeaderboard();
+    </script>
+</body>
+</html>
