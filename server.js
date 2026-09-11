@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increased limit for base64 image data
-app.use(express.static(path.join(__dirname, 'public')));
 
 // In-memory data store for potholes and users
 let potholes = [];
@@ -93,11 +92,16 @@ app.patch('/api/potholes/:id', (req, res) => {
     res.json(pothole);
 });
 
-app.get("/", (req, res) => {
-  res.send("Backend is running successfully");
+app.get("/api", (req, res) => {
+  res.send("Backend API is running successfully");
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Start the server locally (Only if NOT running on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel
+module.exports = app;
